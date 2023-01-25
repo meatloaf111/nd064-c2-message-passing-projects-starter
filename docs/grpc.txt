@@ -15,8 +15,8 @@ For example, here is a sample payload:
 '''
 {
     "person_id": 1,
-    "latitude": "34.018299292",
-    "longitude": "-0.3678282"
+    "latitude": "26.212",
+    "longitude": "127.681"
 }
 '''
 
@@ -29,9 +29,8 @@ Send request to grpc://localhost:30005
 
 with message body:
 {
-    "latitude": "100.00",
-    "longitude": "100.00",
-    "person_id": 1
+    "person_id": 1,
+    "latitude": "26.212",
+    "longitude": "127.681"
 }
-
 '''
