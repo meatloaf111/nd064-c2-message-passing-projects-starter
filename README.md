@@ -79,23 +79,75 @@ Afterwards, you can test that `kubectl` works by running a command like `kubectl
 1. `kubectl apply -f deployment/db-configmap.yaml` - Set up environment variables for the pods
 2. `kubectl apply -f deployment/db-secret.yaml` - Set up secrets for the pods
 3. `kubectl apply -f deployment/postgres.yaml` - Set up a Postgres database running PostGIS
-4. `kubectl apply -f deployment/udaconnect-api.yaml` - Set up the service and deployment for the API
-5. `kubectl apply -f deployment/udaconnect-app.yaml` - Set up the service and deployment for the web app
-6. `sh scripts/run_db_command.sh <POD_NAME>` - Seed your database against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`)
+4. `kubectl apply -f deployment/udaconnect-person-api.yaml` - Set up the service and deployment for the Person API
+5. `kubectl apply -f deployment/udaconnect-connection-api.yaml` - Set up the service and deployment for the Connection API
+6. `kubectl apply -f deployment/udaconnect-app.yaml` - Set up the service and deployment for the web app
+7. `sh scripts/run_db_command.sh <POD_NAME>` - Seed your database against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`)
 
 Manually applying each of the individual `yaml` files is cumbersome but going through each step provides some context on the content of the starter project. In practice, we would have reduced the number of steps by running the command against a directory to apply of the contents: `kubectl apply -f deployment/`.
 
 Note: The first time you run this project, you will need to seed the database with dummy data. Use the command `sh scripts/run_db_command.sh <POD_NAME>` against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`). Subsequent runs of `kubectl apply` for making changes to deployments or services shouldn't require you to seed the database again!
 
-### Verifying it Works
-Once the project is up and running, you should be able to see 3 deployments and 3 services in Kubernetes:
-`kubectl get pods` and `kubectl get services` - should both return `udaconnect-app`, `udaconnect-api`, and `postgres`
+10. Setup Kafka environment and location ingest & location service
+```
+# Install Helm based on your favorite choice of install method
+I used chocolately version
+https://community.chocolatey.org/packages/kubernetes-helm
 
+choco install Kubernetes-helm
+
+# Install kafka 
+helm repo add bitnami ‌https://charts.bitnami.com/bitnami‌
+helm repo update
+helm template kafka bitnami/kafka \
+--set volumePermissions.enabled=true \
+--set zookeeper.volumePermissions.enabled=true \
+> kafka.yaml
+
+# Create 'location' topic
+
+kubectl exec -it kafka-0 -- kafka-console-consumer.sh --bootstrap-server kafka:9092 --from-beginning --topic location
+
+```
+11. `kubectl apply -f deployment/udaconnect-location-service.yaml` - Set up the service and deployment for the Location service
+
+12. `kubectl apply -f deployment/udaconnect-location-ingest.yaml` - Set up the service and deployment for the Location ingest
+
+### Verifying it Works
+Once the project is up and running, you should be able to see deployments and services similar to the following:
+```
+$ kubectl get deployment
+NAME                          READY   UP-TO-DATE   AVAILABLE   AGE  
+postgres                      1/1     1            1           11d  
+udaconnect-person-api         1/1     1            1           6d21h
+udaconnect-location-ingest    1/1     1            1           4d23h
+udaconnect-location-service   1/1     1            1           4d1h 
+udaconnect-connection-api     1/1     1            1           6d8h 
+udaconnect-app                1/1     1            1           82m 
+```
+
+```
+$ kubectl get svc
+NAME                            TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+kubernetes                      ClusterIP   10.43.0.1       <none>        443/TCP                      13d
+postgres                        NodePort    10.43.10.90     <none>        5432:30830/TCP               11d
+udaconnect-api                  NodePort    10.43.119.199   <none>        5000:30001/TCP               11d
+udaconnect-person-api           NodePort    10.43.37.133    <none>        5000:30002/TCP               6d21h
+udaconnect-location-api         NodePort    10.43.182.57    <none>        5000:30003/TCP               6d9h
+udaconnect-connection-api       NodePort    10.43.62.86     <none>        5000:30004/TCP               6d8h
+udaconnect-location-ingest      NodePort    10.43.14.135    <none>        5005:30005/TCP               4d23h
+my-release-zookeeper-headless   ClusterIP   None            <none>        2181/TCP,2888/TCP,3888/TCP   4d22h
+my-release-kafka-headless       ClusterIP   None            <none>        9092/TCP,9093/TCP            4d22h
+my-release-zookeeper            ClusterIP   10.43.66.0      <none>        2181/TCP,2888/TCP,3888/TCP   4d22h
+my-release-kafka                ClusterIP   10.43.148.120   <none>        9092/TCP                     4d22h
+udaconnect-location-service     NodePort    10.43.195.210   <none>        5000:30006/TCP               4d1h
+udaconnect-app                  NodePort    10.43.166.71    <none>        3000:30000/TCP               11d
+```
 
 These pages should also load on your web browser:
-* `http://localhost:30001/` - OpenAPI Documentation
-* `http://localhost:30001/api/` - Base path for API
 * `http://localhost:30000/` - Frontend ReactJS Application
+* `http://localhost:30002/api/persons/{person_id}` - Person API
+* `http://localhost:30004/api/persons/1/connection?start_date=2020-07-07&end_date=2022-07-07` - Connection API Example
 
 #### Deployment Note
 You may notice the odd port numbers being served to `localhost`. [By default, Kubernetes services are only exposed to one another in an internal network](https://kubernetes.io/docs/concepts/services-networking/service/). This means that `udaconnect-app` and `udaconnect-api` can talk to one another. For us to connect to the cluster as an "outsider", we need to a way to expose these services to `localhost`.

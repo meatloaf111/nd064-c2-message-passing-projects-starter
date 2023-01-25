@@ -1,0 +1,37 @@
+gRPC Documentation
+-------------------------
+The location data should conform to the following protobuf definition:
+
+'''
+message LocationMessage {
+    int32 person_id = 1;
+    string latitude = 2;
+    string longitude = 3;
+}
+'''
+
+For example, here is a sample payload:
+
+'''
+{
+    "person_id": 1,
+    "latitude": "34.018299292",
+    "longitude": "-0.3678282"
+}
+'''
+
+The gRPC server is hosted by the 'udaconnect-location-ingest' service.
+
+To test, I used Postman because it is simple. Also you don't have to develop and maintain test client code.
+
+'''
+Send request to grpc://localhost:30005
+
+with message body:
+{
+    "latitude": "100.00",
+    "longitude": "100.00",
+    "person_id": 1
+}
+
+'''

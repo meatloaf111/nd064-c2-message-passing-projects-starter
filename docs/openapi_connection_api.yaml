@@ -1,0 +1,69 @@
+openapi: 3.0.1
+info:
+  description: Manage the person's connection data
+  title: Connection API
+  version: "1.0.0"
+paths:
+  /api/persons/{person_id}/connection:
+    get:
+      summary: Retreive a person's connection from the database
+      operationId: retreive
+      description: By passing in an person_id you can retreive the person's connection data from the database
+      parameters:
+        - in: path
+          name: person_id
+          schema:
+            type: integer
+          required: true
+          description: Unique ID for a given Person
+      responses:
+        '200':
+          description: Successful retreival
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Connection'
+        '404':
+          description: Requested person id not found      
+components:
+  schemas:
+    Connection:
+      type: object
+      required:
+        - "location"
+        - "person"
+      properties:
+        location: 
+          required: 
+            - "latitude"
+            - "person_id"
+            - "creation_time"
+            - "longitude"
+            - "id"
+          properties: 
+            latitude: 
+              type: "string"
+            person_id: 
+              type: "integer"
+            creation_time: 
+              type: "string"
+            longitude: 
+              type: "string"
+            id: 
+              type: "integer"
+          type: "object"
+        person: 
+          required: 
+            - "last_name"
+            - "first_name"
+            - "id"
+            - "company_name"
+          properties: 
+            last_name: 
+              type: "string"
+            first_name: 
+              type: "string"
+            id: 
+              type: "integer"
+            company_name: 
+              type: "string"

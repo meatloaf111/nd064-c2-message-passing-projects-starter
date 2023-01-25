@@ -1,0 +1,63 @@
+{
+	"info": {
+		"_postman_id": "73e20929-f447-4a1f-8859-3c88522d4da8",
+		"name": "udaconnect_rest",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3117294"
+	},
+	"item": [
+		{
+			"name": "http://localhost:30002/api/persons/1",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:30002/api/persons/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "30002",
+					"path": [
+						"api",
+						"persons",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:30004/api/persons/1/connection?start_date=2020-07-07&end_date=2022-07-07",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:30004/api/persons/1/connection?start_date=2020-07-07&end_date=2022-07-07",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "30004",
+					"path": [
+						"api",
+						"persons",
+						"1",
+						"connection"
+					],
+					"query": [
+						{
+							"key": "start_date",
+							"value": "2020-07-07"
+						},
+						{
+							"key": "end_date",
+							"value": "2022-07-07"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

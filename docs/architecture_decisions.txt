@@ -1,0 +1,18 @@
+Architectural Decisions
+-------------------------------
+I applied following message passing techniques in this architecture.:
+- REST APIs
+- Message Queues (Kafka)
+- gRPC
+
+The frontend client leverages REST APIs to enable integration with the various HTTP routes.
+REST was chosen because it is the most straightforward form of message passing that does not introduce unnecessary complexity into our solution.
+There are no requirements which require high-performance integration which requires another techniques.
+
+On the other hand, I expect large volume of transaction of location data from mobile devices.
+In order to have better peformance , I chose gRPC.
+This will lead to handle a large volume of location data that will sent from many mobile devices.
+
+Location data is then writen into Kafka topic.
+I chose message queues because to achieve improved performance, improved reliability.
+This will lead to have a relaiable architecture without losing any of location data coming from numerous mobile debices.

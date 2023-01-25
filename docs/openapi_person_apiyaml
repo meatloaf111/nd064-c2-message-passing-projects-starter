@@ -1,0 +1,79 @@
+openapi: 3.0.1
+info:
+  description: Manage the person data
+  title: Person API
+  version: "1.0.0"
+paths:
+  /api/persons:
+    get:
+      summary: Retreive all person data
+      operationId: retreive_all
+      responses:
+        '200':
+          description: Successful retreival
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '404':
+          description: Not found  
+    post:
+      summary: Create a person data
+      operationId: create
+      description: Crete a person data
+      responses:
+        '201':
+          description: Person created
+        '400':
+          description: Invalid input, object invalid
+        '409':
+          description: An existing person already exists
+      requestBody:
+        content: 
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Person'
+          description: Person to add
+  /api/persons/{person_id}:
+    get:
+      summary: Retreive a person from the Person data
+      operationId: retreive
+      description: By passing in an person_id you can retreive the person information
+      parameters:
+        - in: path
+          name: person_id
+          schema:
+            type: integer
+          required: true
+          description: Unique ID for a given Person
+      responses:
+        '200':
+          description: Successful retreival
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Person'
+        '404':
+          description: Requested person id not found      
+components:
+  schemas:
+    Person:
+      type: object
+      required:
+        - id
+        - first_name
+        - last_name
+        - company_name
+      properties:
+        id:
+          type: integer
+          example: 1
+        first_name:
+          type: string
+          example: "Pam"
+        last_name:
+          type: string
+          example: "Trexler"
+        company_name:
+          type: string
+          example: "Hampton, Hampton and McQuill"
